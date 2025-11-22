@@ -27,34 +27,40 @@ body {
     color:var(--accent); min-height:100vh;
     padding:0; overflow-x: hidden; 
     display: flex; 
-    justify-content: center; 
+    justify-content: flex-start; /* 탑바 꽉 채우기 위해 변경 */
     flex-direction: column;
 }
 
+/* .phone 컨테이너에서 max-width 제거하여 전체 너비 사용 */
 .phone{
-    width:100%; min-height:100vh; position:relative; margin: 0 auto;
-    display:flex; flex-direction:column;
-    max-width: 1200px; /* PC 환경에서 콘텐츠 최대 너비 증가 */
+    width:100%; 
+    min-height:100vh; 
+    position:relative; 
+    margin: 0; /* 중앙 정렬 제거 */
+    display:flex; 
+    flex-direction:column;
 }
 
-/* 헤더 스타일 */
+/* 헤더 스타일: 화면 너비 전체에 꽉 차게 */
 .header{
-    display:flex; justify-content:space-between; align-items:center; padding:10px 16px; 
+    display:flex; 
+    justify-content:space-between; 
+    align-items:center; 
+    padding:10px 16px; 
     height: var(--header-height); 
     border-bottom:none;
-    position: fixed; top: 0; left: 0; right: 0; 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    right: 0; /* 화면 너비 전체에 걸쳐 고정 */
     z-index: 1000; 
-    background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(8px); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); 
+    background: rgba(255, 255, 255, 0.9); 
+    backdrop-filter: blur(8px); 
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); 
 }
 
-/* PC 환경에서 헤더 중앙 정렬 */
-@media (min-width: 1200px) {
-    .header {
-        max-width: 1200px;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-}
+/* 헤더 내부 콘텐츠를 중앙으로 모으기 위한 컨테이너 (선택적) - 현재는 사용하지 않음 */
+/* .header-inner { max-width: 1200px; width: 100%; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; } */
 
 .header-left-group { display: flex; align-items: center; }
 .header-title a { 
@@ -63,15 +69,19 @@ body {
 }
 .header-right-group { display: flex; align-items: center; gap: 10px; }
 
-/* 메인 콘텐츠 영역 */
+/* 메인 콘텐츠 영역: 최대 너비를 설정하고 중앙 정렬 */
 main {
     padding-top: var(--header-height); 
     padding-bottom: 20px; 
-    padding-left: 16px;
-    padding-right: 16px;
     width: 100%; 
     flex-grow: 1; 
     text-align: left;
+    
+    /* PC에서 콘텐츠를 중앙으로 모으는 핵심 */
+    max-width: 1200px; 
+    margin: 0 auto;
+    padding-left: 16px; /* 중앙 정렬 후 좌우 패딩 유지 */
+    padding-right: 16px; /* 중앙 정렬 후 좌우 패딩 유지 */
 }
 
 /* 'Project' 텍스트 스타일 */
@@ -92,16 +102,16 @@ main {
     grid-template-columns: 1fr; 
     gap: 20px;
     width: 100%;
-    max-width: 600px; /* 모바일/태블릿에서 중앙 정렬을 위한 최대 너비 설정 */
-    margin: 0 auto; /* 모바일에서 중앙 정렬 */
+    /* 모바일/태블릿에서 중앙 정렬을 위한 max-width 제거 (main이 이미 중앙 정렬) */
+    /* margin: 0 auto; 삭제 (main이 처리) */
 }
 
 /* PC 환경: 3열 레이아웃 및 왼쪽 정렬 */
 @media (min-width: 768px) {
     .project-grid {
         grid-template-columns: repeat(3, 1fr);
-        max-width: 100%; /* PC에서는 최대 너비 해제 */
-        margin: 0; /* 왼쪽 정렬 */
+        max-width: 100%; 
+        margin: 0; 
     }
 }
 
@@ -114,7 +124,7 @@ main {
     text-align: left;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    height: 100%; /* 그리드 내에서 높이 동일하게 */
+    height: 100%; 
     display: flex;
     flex-direction: column;
 }
@@ -150,7 +160,7 @@ main {
     font-size: 1em;
     line-height: 1.5;
     margin-bottom: 20px;
-    flex-grow: 1; /* 설명 텍스트가 남은 공간을 차지하도록 */
+    flex-grow: 1; 
 }
 
 /* --- 버튼 스타일 --- */
@@ -167,13 +177,13 @@ main {
     box-shadow: none; 
     text-decoration: none;
     display: inline-flex;
-    align-self: flex-start; /* 카드 왼쪽 정렬 */
+    align-self: flex-start; 
     align-items: center;
     justify-content: center;
 }
 
 /* 호버 시 스타일 변경: 배경 검은색, 텍스트 흰색 */
-.use-button:not(.disabled-button):hover { /* 비활성화 버튼에는 호버 효과 적용 안함 */
+.use-button:not(.disabled-button):hover { 
     background-color: var(--accent); 
     color: #ffffff;
     transform: translateY(-1px);
@@ -185,11 +195,11 @@ main {
 /* 비활성화된 버튼 스타일 */
 .disabled-button {
     cursor: default;
-    opacity: 0.6; /* 비활성화 느낌 */
-    pointer-events: none; /* 클릭 이벤트 방지 */
-    background-color: #f1f1f1 !important; /* 배경색 살짝 회색 */
-    color: #888888 !important; /* 텍스트색 회색 */
-    border-color: #d0d0d0 !important; /* 테두리색 밝게 */
+    opacity: 0.6; 
+    pointer-events: none; 
+    background-color: #f1f1f1 !important; 
+    color: #888888 !important; 
+    border-color: #d0d0d0 !important; 
 }
 
 /* 모바일/작은 화면 미디어 쿼리 */
