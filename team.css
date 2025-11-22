@@ -43,7 +43,7 @@ body {
     flex-direction:column;
 }
 
-/* 헤더 스타일: 화면 너비 전체에 꽉 차게 */
+/* --- 헤더 스타일 --- */
 .header{
     display:flex; 
     justify-content:space-between; 
@@ -54,22 +54,68 @@ body {
     position: fixed; 
     top: 0; 
     left: 0; 
-    right: 0; /* 화면 너비 전체에 걸쳐 고정 */
+    right: 0; 
     z-index: 1000; 
-    
-    /* 애플 스타일 블러 효과 적용 */
-    background: rgba(255, 255, 255, 0.7); /* 블러를 위해 투명도 낮춤 */
-    backdrop-filter: blur(10px); /* 블러 강도 증가 */
-    -webkit-backdrop-filter: blur(10px); /* Safari 지원 */
+    background: rgba(255, 255, 255, 0.9); 
+    backdrop-filter: blur(8px); 
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); 
 }
 
+.header-icon{ 
+    width:32px; height:32px; display:flex; align-items:center; justify-content:center; color:#111827; cursor: pointer; flex-shrink: 0; 
+}
 .header-left-group { display: flex; align-items: center; }
 .header-title a { 
     font-size: 18px; font-weight: 600; color: var(--accent); margin-left: 0; flex-shrink: 0; 
     text-decoration: none; 
 }
 .header-right-group { display: flex; align-items: center; gap: 10px; }
+.header-center { text-align: left; display: flex; justify-content: flex-start; align-items: center; margin-left: 10px; }
+
+/* PC 액션 버튼 스타일 */
+.action-btn { 
+    background-color: transparent; 
+    color: var(--accent); 
+    font-weight: 600; 
+    padding: 4px 10px; 
+    border-radius: 16px; 
+    display: flex; 
+    align-items: center; 
+    gap: 4px; 
+    font-size: 14px; 
+    cursor: pointer; 
+    line-height: 1.2; 
+    margin-left: 10px;
+    text-decoration: none; 
+    transition: color 0.2s;
+}
+
+.action-btn:hover {
+    color: var(--pink-accent); 
+}
+
+/* --- 메뉴 활성화 링크 스타일 추가 --- */
+.action-btn.active-link {
+    background-color: var(--pink-accent); 
+    color: #ffffff; 
+    font-weight: 700;
+}
+
+.action-btn.active-link:hover {
+    color: #ffffff; 
+    background-color: var(--darker-pink);
+}
+
+.mobile-menu-dropdown a.active-link {
+    background-color: var(--pink-accent); 
+    color: #ffffff; 
+    border: 1px solid var(--pink-accent);
+}
+
+.mobile-menu-dropdown a.active-link:hover {
+    background-color: var(--darker-pink);
+}
+/* ------------------------------------------- */
 
 /* 메인 콘텐츠 영역: 배경이 꽉 차도록 max-width와 margin을 제거하거나 조정 */
 main {
