@@ -23,7 +23,7 @@ body :is(.header-title, .plus-btn, .action-btn, .message-text, .input-container 
 * { box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
 body {
     margin:0; 
-    background: #f8f8f8; 
+    background: #ffffff; 
     color:var(--accent); min-height:100vh;
     padding:0; overflow-x: hidden; 
     display: flex; 
