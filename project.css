@@ -27,7 +27,7 @@ body {
     color:var(--accent); min-height:100vh;
     padding:0; overflow-x: hidden; 
     display: flex; 
-    justify-content: flex-start; /* 탑바 꽉 채우기 위해 변경 */
+    justify-content: flex-start;
     flex-direction: column;
 }
 
@@ -36,7 +36,7 @@ body {
     width:100%; 
     min-height:100vh; 
     position:relative; 
-    margin: 0; /* 중앙 정렬 제거 */
+    margin: 0;
     display:flex; 
     flex-direction:column;
 }
@@ -58,9 +58,6 @@ body {
     backdrop-filter: blur(8px); 
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); 
 }
-
-/* 헤더 내부 콘텐츠를 중앙으로 모으기 위한 컨테이너 (선택적) - 현재는 사용하지 않음 */
-/* .header-inner { max-width: 1200px; width: 100%; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; } */
 
 .header-left-group { display: flex; align-items: center; }
 .header-title a { 
@@ -93,6 +90,7 @@ main {
     margin-bottom: 20px;
     display: block; 
     text-align: left;
+    margin-left: 10px; /* PC 환경에서 오른쪽으로 10px 이동 */
 }
 
 /* --- 프로젝트 카드 컨테이너 (레이아웃 조정 핵심) --- */
@@ -102,8 +100,6 @@ main {
     grid-template-columns: 1fr; 
     gap: 20px;
     width: 100%;
-    /* 모바일/태블릿에서 중앙 정렬을 위한 max-width 제거 (main이 이미 중앙 정렬) */
-    /* margin: 0 auto; 삭제 (main이 처리) */
 }
 
 /* PC 환경: 3열 레이아웃 및 왼쪽 정렬 */
@@ -204,8 +200,19 @@ main {
 
 /* 모바일/작은 화면 미디어 쿼리 */
 @media (max-width: 600px) {
-    .project-page-title { font-size: 1.8em; margin-top: 15px; margin-bottom: 15px; }
+    .project-page-title { 
+        font-size: 1.8em; 
+        margin-top: 15px; 
+        margin-bottom: 15px;
+        margin-left: 0; /* 모바일 환경에서는 여백을 0으로 설정하여 중앙 정렬된 메인 콘텐츠의 왼쪽 패딩에 맞춤 */
+    }
     .card-title { font-size: 1.5em; }
     .card-description { font-size: 0.9em; }
     .use-button { padding: 8px 20px; font-size: 1em; }
+    
+    /* 모바일에서 카드 중앙 정렬을 위한 grid margin 조정 */
+    .project-grid {
+        max-width: 400px; /* 모바일에서 카드가 너무 넓어지지 않도록 최대 너비 설정 */
+        margin: 0 auto; /* 중앙 정렬 */
+    }
 }
