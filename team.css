@@ -7,6 +7,11 @@
     --yellow-accent: #ffc107; /* 논의중 (Unknown) */
     --gradient-start: #ff7e5f; /* 핑크색 계열 시작 (밝은 산호색) */
     --gradient-end: #feb47b; /* 핑크색 계열 끝 (복숭아색) */
+    
+    /* 메뉴 관련 변수 추가 (terms.css에서 가져옴) */
+    --pink-accent: #ff69b4; 
+    --light-pink: #ffe6f0; 
+    --darker-pink: #ff99cc; 
 }
 
 /* 폰트 적용 */
@@ -94,7 +99,7 @@ body {
     color: var(--pink-accent); 
 }
 
-/* --- 메뉴 활성화 링크 스타일 추가 --- */
+/* --- 메뉴 활성화 링크 스타일 추가 (terms.css에서 가져옴) --- */
 .action-btn.active-link {
     background-color: var(--pink-accent); 
     color: #ffffff; 
@@ -116,6 +121,72 @@ body {
     background-color: var(--darker-pink);
 }
 /* ------------------------------------------- */
+
+/* PC 버전 메뉴 링크 컨테이너 (terms.css에서 가져옴) */
+.pc-menu-links {
+    display: flex; 
+    align-items: center; 
+    margin-left: 20px; 
+}
+
+/* --- 모바일 드롭다운 메뉴 스타일 (terms.css에서 가져옴) --- */
+.mobile-menu-dropdown {
+    position: fixed;
+    top: var(--header-height); 
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+    
+    max-height: 0;
+    opacity: 0;
+    border-radius: 0 0 20px 20px; 
+    overflow: hidden; 
+    
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                opacity 0.1s ease-out,
+                padding 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    padding: 0 16px; 
+}
+
+.mobile-menu-dropdown.is-open {
+    max-height: 400px; 
+    opacity: 1;
+    padding: 10px 16px 16px 16px; 
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                opacity 0.4s ease-in, 
+                padding 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobile-menu-dropdown a {
+    display: block;
+    margin-bottom: 10px; 
+    padding: 12px 20px;
+    text-decoration: none;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 16px;
+    text-align: center;
+    
+    background-color: var(--light-pink); 
+    border: 1px solid var(--darker-pink); 
+    border-radius: 12px; 
+    
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.mobile-menu-dropdown a:hover {
+    background-color: #ffdaeb; 
+    transform: translateY(-1px);
+}
+
+.mobile-menu-dropdown a:last-child {
+    margin-bottom: 0;
+}
+/* ------------------------------------------- */
+
 
 /* 메인 콘텐츠 영역: 배경이 꽉 차도록 max-width와 margin을 제거하거나 조정 */
 main {
@@ -198,17 +269,6 @@ main {
     padding-right: 16px; 
 }
 
-/* PC 환경: 3열 레이아웃 및 왼쪽 정렬 */
-@media (min-width: 768px) {
-    .project-grid {
-        grid-template-columns: repeat(3, 1fr);
-        max-width: 100%; 
-        margin-left: auto; 
-        margin-right: auto; 
-        margin-top: 20px; 
-    }
-}
-
 /* --- 프로젝트 카드 스타일 (애플 스타일 블러 적용) --- */
 .project-card {
     /* 카드 배경 투명도를 낮춤 */
@@ -271,11 +331,20 @@ main {
     flex-grow: 1; 
 }
 
-/* --- 버튼 스타일 (제거됨) --- */
+/* --- 미디어 쿼리 (terms.css 및 team.css 통합) --- */
 
-
-/* 모바일/작은 화면 미디어 쿼리 */
-@media (max-width: 600px) {
+/* 모바일 환경 (768px 이하): 메뉴 아이콘 표시, PC 버튼 숨김 */
+@media (max-width: 768px) {
+    /* Header (terms.css) */
+    .pc-menu-links {
+        display: none; 
+    }
+    .mobile-only {
+        visibility: visible;
+        display: flex; 
+    }
+    
+    /* Team Content (team.css) */
     .title-background {
         padding: 30px 16px 30px; 
     }
@@ -296,8 +365,8 @@ main {
         margin-right: 0;
     }
     
-    /* 모바일에서 카드 중앙 정렬을 위한 grid margin 조정 */
     .project-grid {
+        grid-template-columns: 1fr; /* 모바일에서 1열로 변경 */
         margin-top: 20px; 
         max-width: 400px; 
         margin-left: auto; 
@@ -312,5 +381,34 @@ main {
     .profile-image {
         width: 60px; 
         height: 60px; 
+    }
+}
+
+/* PC 환경 (769px 이상): 메뉴 아이콘 숨김, PC 버튼 표시 */
+@media (min-width: 769px) {
+    /* Header (terms.css) */
+    .menu-icon {
+        display: none !important; 
+    }
+    .pc-menu-links {
+        display: flex; 
+    }
+    .header {
+        justify-content: flex-start; 
+        padding: 10px 30px; 
+    }
+    .mobile-menu-dropdown {
+        display: none !important; 
+    }
+
+    /* Team Content (team.css) */
+    .project-grid {
+        grid-template-columns: repeat(3, 1fr);
+        max-width: 1200px; 
+        margin-left: auto; 
+        margin-right: auto;
+        padding-left: 16px; 
+        padding-right: 16px;
+        margin-top: 20px;
     }
 }
