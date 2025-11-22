@@ -17,6 +17,7 @@
 </head>
 <body>
   <div class="phone" role="application" aria-label="Recore AI UI">
+      
     <header class="header">
         
         <div class="header-left-group">
@@ -46,9 +47,6 @@
         <a href="terms">약관</a>
         <a href="docs">문서</a>
     </div>
-        
-    </header>
-
     <main>
         <div class="title-background">
             <div class="project-page-title">
@@ -97,5 +95,39 @@
     </main>
     
   </div>
-</body>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuIcon = document.querySelector('.menu-icon');
+            const mobileDropdown = document.getElementById('mobileDropdown');
+            const pcBreakpoint = 769; 
+
+            // --- 모바일 메뉴 드롭다운 토글 기능 ---
+            if (menuIcon && mobileDropdown) {
+                menuIcon.addEventListener('click', (e) => {
+                    e.stopPropagation(); 
+                    mobileDropdown.classList.toggle('is-open');
+                });
+            }
+            
+            // --- 외부 클릭 시 드롭다운 닫기 기능 ---
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth < pcBreakpoint) { 
+                    if (mobileDropdown.classList.contains('is-open') && !mobileDropdown.contains(e.target) && !menuIcon.contains(e.target)) {
+                        mobileDropdown.classList.remove('is-open');
+                    }
+                }
+            });
+            
+            // --- 화면 크기 변경 감지 (PC/모바일 전환 시 드롭다운 닫기) ---
+            const closeDropdownOnResize = () => {
+                if (window.innerWidth >= pcBreakpoint && mobileDropdown.classList.contains('is-open')) {
+                    mobileDropdown.classList.remove('is-open');
+                }
+            };
+
+            window.addEventListener('resize', closeDropdownOnResize);
+        });
+    </script>
+    </body>
 </html>
