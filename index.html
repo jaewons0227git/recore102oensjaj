@@ -128,23 +128,29 @@
             border-radius: 0 0 20px 20px; 
             overflow: hidden; 
             
-            /* 애니메이션: max-height를 이용해 늘어나면서 나타나는 효과 */
-            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease-in-out; 
+            /* BUG FIX: 닫힐 때 opacity를 빠르게(0.1s) 전환하고, padding도 transition에 포함 */
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                        opacity 0.1s ease-out,
+                        padding 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             
             padding: 0 16px; 
         }
         
         /* 메뉴가 열렸을 때의 스타일 */
         .mobile-menu-dropdown.is-open {
-            max-height: 300px; 
+            /* 열릴 때는 max-height와 opacity, padding 모두 부드럽게 전환 */
+            max-height: 400px; 
             opacity: 1;
             padding: 10px 16px 16px 16px; 
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                        opacity 0.4s ease-in, 
+                        padding 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* 드롭다운 메뉴 항목 (버튼 스타일) */
         .mobile-menu-dropdown a {
             display: block;
-            margin-bottom: 10px; /* 항목 간격 조정 */
+            margin-bottom: 10px; 
             padding: 12px 20px;
             text-decoration: none;
             color: var(--accent);
@@ -153,9 +159,9 @@
             text-align: center;
             
             /* 요청된 핑크 버튼 스타일 */
-            background-color: var(--light-pink); /* 연한 핑크 배경 */
-            border: 1px solid var(--darker-pink); /* 좀더 진한 핑크 테두리 */
-            border-radius: 12px; /* 버튼 모서리 곡률 조정 */
+            background-color: var(--light-pink); 
+            border: 1px solid var(--darker-pink); 
+            border-radius: 12px; 
             
             transition: background-color 0.2s, transform 0.1s;
         }
@@ -324,6 +330,8 @@
             <div class="header-center pc-menu-links">
                 <a href="project" class="action-btn">프로젝트</a>
                 <a href="team" class="action-btn">팀 리코어</a>
+                <a href="terms" class="action-btn">약관</a>
+                <a href="docs" class="action-btn">문서</a>
             </div>
         </div>
         
@@ -336,6 +344,8 @@
     <div class="mobile-menu-dropdown" id="mobileDropdown">
         <a href="project">프로젝트</a>
         <a href="team">팀 리코어</a>
+        <a href="terms">약관</a>
+        <a href="docs">문서</a>
     </div>
 
     <main>
