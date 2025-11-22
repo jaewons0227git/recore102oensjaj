@@ -24,10 +24,12 @@
             --delay-p: 0.5s;
             --delay-input: 0.7s;
             --hide-duration: 0.3s; 
-            --transition-duration: 0.3s; /* 트랜지션 시간 단축 */
+            --transition-duration: 0.3s; 
             --glow-color: rgba(220, 220, 220, 0.4); 
             --border-color: #d0d0d0; 
-            --pink-accent: #ff69b4; /* 핑크색 정의 */
+            --pink-accent: #ff69b4; 
+            --light-pink: #ffe6f0; 
+            --darker-pink: #ff99cc; 
         }
 
         /* 폰트 적용 */
@@ -46,7 +48,6 @@
         *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
         body{
             margin:0; 
-            /* PC 기본 배경: 흰색으로 변경 */
             background: #ffffff; 
             color:var(--accent); min-height:100vh;
             padding:0; overflow: hidden; 
@@ -56,10 +57,9 @@
             flex-direction: column;
         }
         
-        /* 모바일 환경 (768px 이하): 기존 배경색 흰색 유지 */
         @media (max-width: 768px) {
             body {
-                background: #ffffff; /* 모바일 배경색 흰색 유지 */
+                background: #ffffff; 
             }
         }
         
@@ -101,7 +101,7 @@
         }
 
         .action-btn:hover {
-            color: var(--pink-accent); /* 호버 시 핑크색으로 변경 */
+            color: var(--pink-accent); 
         }
         
         /* PC 버전에서 표시될 버튼 그룹 스타일 */
@@ -114,35 +114,60 @@
         /* --- 모바일 드롭다운 메뉴 스타일 --- */
         .mobile-menu-dropdown {
             position: fixed;
-            top: var(--header-height); /* 헤더 아래에 위치 */
+            top: var(--header-height); 
             left: 0;
             right: 0;
             background: #ffffff;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             z-index: 999;
-            display: none; /* 기본적으로 숨김 */
-            padding: 10px 0;
-            border-bottom-left-radius: 8px;
-            border-bottom-right-radius: 8px;
-            transition: all 0.3s ease-in-out;
+            
+            /* 부드러운 전환 효과를 위한 초기 설정 */
+            max-height: 0;
+            opacity: 0;
+            /* 곡률 더 높임: 아래쪽 모서리만 둥글게 */
+            border-radius: 0 0 20px 20px; 
+            overflow: hidden; 
+            
+            /* 애니메이션: max-height를 이용해 늘어나면서 나타나는 효과 */
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease-in-out; 
+            
+            padding: 0 16px; 
         }
         
+        /* 메뉴가 열렸을 때의 스타일 */
         .mobile-menu-dropdown.is-open {
-            display: block;
+            max-height: 300px; 
+            opacity: 1;
+            padding: 10px 16px 16px 16px; 
         }
 
+        /* 드롭다운 메뉴 항목 (버튼 스타일) */
         .mobile-menu-dropdown a {
             display: block;
+            margin-bottom: 10px; /* 항목 간격 조정 */
             padding: 12px 20px;
             text-decoration: none;
             color: var(--accent);
-            font-weight: 500;
-            transition: background-color 0.2s;
+            font-weight: 600;
             font-size: 16px;
+            text-align: center;
+            
+            /* 요청된 핑크 버튼 스타일 */
+            background-color: var(--light-pink); /* 연한 핑크 배경 */
+            border: 1px solid var(--darker-pink); /* 좀더 진한 핑크 테두리 */
+            border-radius: 12px; /* 버튼 모서리 곡률 조정 */
+            
+            transition: background-color 0.2s, transform 0.1s;
         }
 
         .mobile-menu-dropdown a:hover {
-            background-color: #f1f4ff;
+            background-color: #ffdaeb; 
+            transform: translateY(-1px);
+        }
+        
+        /* 마지막 항목의 하단 마진 제거 */
+        .mobile-menu-dropdown a:last-child {
+            margin-bottom: 0;
         }
         /* --- 드롭다운 스타일 끝 --- */
 
@@ -171,15 +196,15 @@
         
         /* 중앙 콘텐츠 간격 0 설정 */
         .top-image { 
-            max-width: 150px; /* 크기 확대 */
+            max-width: 150px; 
             height: auto; margin-bottom: 0px; flex-shrink: 0; animation-delay: var(--delay-img); 
         }
         h1 { 
             /* 모든 환경에서 그라데이션 적용 */
-            background-image: var(--bg-gradient); /* 배경 그라데이션 사용 */
-            -webkit-background-clip: text; /* 텍스트 클립 */
+            background-image: var(--bg-gradient); 
+            -webkit-background-clip: text; 
             background-clip: text;
-            color: transparent; /* 텍스트 색상을 투명하게 */
+            color: transparent; 
             
             font-size: 2.5em; margin-bottom: 0px; 
             line-height: 1.1; white-space: nowrap; overflow: hidden; animation-delay: var(--delay-h1);
@@ -209,16 +234,16 @@
             transition: all var(--transition-duration) cubic-bezier(0.4, 0, 0.2, 1); 
             z-index: 10; animation-delay: var(--delay-input);
             position: relative; 
-            margin-top: 20px; /* 위 간격 조정 */
+            margin-top: 20px; 
         }
 
         /* 프로젝트 버튼 스타일 (요청된 모서리 반원 스타일) */
         .project-button-container .project-btn { 
             padding: 12px 30px; 
-            background-color: transparent; /* 배경 투명 */
-            color: var(--accent); /* 기본 텍스트색 검은색 */
-            border: 2px solid var(--accent); /* 검은색 테두리 */
-            border-radius: 50px; /* 모서리 반원 */
+            background-color: transparent; 
+            color: var(--accent); 
+            border: 2px solid var(--accent); 
+            border-radius: 50px; 
             font-size: 1.2em; 
             font-weight: 600;
             display: flex; 
@@ -233,8 +258,8 @@
         
         /* 호버 시 스타일 변경: 배경 검은색, 텍스트 흰색 */
         .project-button-container .project-btn:hover { 
-            background-color: var(--accent); /* 배경 검은색 */
-            color: #ffffff; /* 텍스트 흰색 */
+            background-color: var(--accent); 
+            color: #ffffff; 
             transform: translateY(-2px);
         }
         .project-button-container .project-btn:active {
@@ -244,7 +269,7 @@
 
         /* 모바일/작은 화면 미디어 쿼리 */
         @media (max-width: 600px) {
-            .top-image { max-width: 100px; } /* 모바일에서 조금 더 작게 */
+            .top-image { max-width: 100px; } 
             h1 { font-size: 5vw; } p { font-size: 3vw; } 
             .project-button-container { margin-top: 15px; }
             .project-button-container .project-btn { 
@@ -261,35 +286,35 @@
         /* 모바일 환경 (768px 이하): 메뉴 아이콘 표시, PC 버튼 숨김 */
         @media (max-width: 768px) {
             .pc-menu-links {
-                display: none; /* PC 메뉴 링크 숨김 */
+                display: none; 
             }
             .mobile-only {
                 visibility: visible;
-                display: flex; /* 메뉴 아이콘 표시 */
+                display: flex; 
             }
         }
 
         /* PC 환경 (769px 이상): 메뉴 아이콘 숨김, PC 버튼 표시 */
         @media (min-width: 769px) {
             .menu-icon {
-                display: none !important; /* 메뉴 아이콘 숨김 */
+                display: none !important; 
             }
             .pc-menu-links {
-                display: flex; /* PC 메뉴 링크 표시 */
+                display: flex; 
             }
             .header {
-                justify-content: flex-start; /* PC에서는 요소들을 왼쪽 정렬 */
-                padding: 10px 30px; /* PC에서는 좌우 패딩 증가 */
+                justify-content: flex-start; 
+                padding: 10px 30px; 
             }
             .mobile-menu-dropdown {
-                display: none !important; /* PC에서는 드롭다운 메뉴 숨김 */
+                display: none !important; 
             }
         }
     </style>
 </head>
 <body>
   <div class="phone" role="application" aria-label="Recore AI UI">
-    <header class="header">
+    <header class="header" id="mainHeader">
         
         <div class="header-left-group">
             <div class="header-title">
@@ -327,11 +352,9 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const projectButtonContainer = document.querySelector('.project-button-container');
-            const projectButton = document.querySelector('.project-btn');
             const menuIcon = document.querySelector('.menu-icon');
             const mobileDropdown = document.getElementById('mobileDropdown');
-            const pcBreakpoint = 769; // PC 전환 기준 (CSS와 일치)
+            const pcBreakpoint = 769; 
 
             // MinsuGPT 서버상태 링크 텍스트 유지 (기존 로직 유지)
             const serverStatusLink = document.querySelector('.server-status-link');
@@ -341,10 +364,22 @@
 
             // --- 모바일 메뉴 드롭다운 토글 기능 ---
             if (menuIcon && mobileDropdown) {
-                menuIcon.addEventListener('click', () => {
+                menuIcon.addEventListener('click', (e) => {
+                    e.stopPropagation(); // 메뉴 아이콘 클릭 시 document 클릭 이벤트 전파 방지
                     mobileDropdown.classList.toggle('is-open');
                 });
             }
+            
+            // --- 외부 클릭 시 드롭다운 닫기 기능 ---
+            document.addEventListener('click', (e) => {
+                // 모바일 환경에서만 작동
+                if (window.innerWidth < pcBreakpoint) { 
+                    // 클릭된 요소가 드롭다운 메뉴 영역 안에 포함되지 않았을 경우 닫기
+                    if (mobileDropdown.classList.contains('is-open') && !mobileDropdown.contains(e.target) && !menuIcon.contains(e.target)) {
+                        mobileDropdown.classList.remove('is-open');
+                    }
+                }
+            });
             
             // --- 화면 크기 변경 감지 (PC/모바일 전환 시 드롭다운 닫기) ---
             const closeDropdownOnResize = () => {
@@ -363,7 +398,7 @@
     position: fixed;
     bottom: 20px;
     right: 20px;
-    color: #AAAAAA; /* 기본색: 연한 회색 */
+    color: #AAAAAA; 
     text-decoration: none;
     font-family: Arial, sans-serif;
     font-size: 14px;
@@ -372,10 +407,10 @@
 
 /* 마우스를 올렸을 때 스타일 */
 .server-status-link:hover {
-    color: #888888; /* 호버색: 조금 더 진한 회색 */
-    text-decoration: underline; /* 밑줄 추가 */
+    color: #888888; 
+    text-decoration: underline; 
 }
 </style>
 
 </body>
-    </html>
+</html>
