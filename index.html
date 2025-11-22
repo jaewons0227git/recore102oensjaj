@@ -81,8 +81,71 @@
         .header-left-group { display: flex; align-items: center; }
         .header-title { font-size: 18px; font-weight: 600; color: var(--accent); margin-left: 8px; flex-shrink: 0; }
         .header-center { text-align: left; display: flex; justify-content: flex-start; align-items: center; margin-left: 10px; }
-        .header-center > .plus-btn { margin: 0; }
-        .plus-btn{ background-color:#f1f4ff; color:#1d6fef; font-weight:600; padding:4px 10px; border-radius:16px; display:flex; align-items:center; gap:4px; font-size:12px; cursor: pointer; line-height: 1.2; }
+        
+        /* 새롭게 추가된 PC 버튼 스타일 */
+        .action-btn { 
+            background-color: transparent; 
+            color: var(--accent); 
+            font-weight: 600; 
+            padding: 4px 10px; 
+            border-radius: 16px; 
+            display: flex; 
+            align-items: center; 
+            gap: 4px; 
+            font-size: 14px; 
+            cursor: pointer; 
+            line-height: 1.2; 
+            margin-left: 10px;
+            text-decoration: none; 
+            transition: color 0.2s;
+        }
+
+        .action-btn:hover {
+            color: var(--pink-accent); /* 호버 시 핑크색으로 변경 */
+        }
+        
+        /* PC 버전에서 표시될 버튼 그룹 스타일 */
+        .pc-menu-links {
+            display: flex; 
+            align-items: center; 
+            margin-left: 20px; 
+        }
+        
+        /* --- 모바일 드롭다운 메뉴 스타일 --- */
+        .mobile-menu-dropdown {
+            position: fixed;
+            top: var(--header-height); /* 헤더 아래에 위치 */
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+            display: none; /* 기본적으로 숨김 */
+            padding: 10px 0;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .mobile-menu-dropdown.is-open {
+            display: block;
+        }
+
+        .mobile-menu-dropdown a {
+            display: block;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: var(--accent);
+            font-weight: 500;
+            transition: background-color 0.2s;
+            font-size: 16px;
+        }
+
+        .mobile-menu-dropdown a:hover {
+            background-color: #f1f4ff;
+        }
+        /* --- 드롭다운 스타일 끝 --- */
+
 
         /* 메인 콘텐츠 영역 */
         main {
@@ -192,6 +255,36 @@
         @media (max-width: 380px) {
             h1 { font-size: 6vw; } p { font-size: 4vw; }
         }
+
+        /* --- 미디어 쿼리 및 PC/모바일 분리 설정 --- */
+
+        /* 모바일 환경 (768px 이하): 메뉴 아이콘 표시, PC 버튼 숨김 */
+        @media (max-width: 768px) {
+            .pc-menu-links {
+                display: none; /* PC 메뉴 링크 숨김 */
+            }
+            .mobile-only {
+                visibility: visible;
+                display: flex; /* 메뉴 아이콘 표시 */
+            }
+        }
+
+        /* PC 환경 (769px 이상): 메뉴 아이콘 숨김, PC 버튼 표시 */
+        @media (min-width: 769px) {
+            .menu-icon {
+                display: none !important; /* 메뉴 아이콘 숨김 */
+            }
+            .pc-menu-links {
+                display: flex; /* PC 메뉴 링크 표시 */
+            }
+            .header {
+                justify-content: flex-start; /* PC에서는 요소들을 왼쪽 정렬 */
+                padding: 10px 30px; /* PC에서는 좌우 패딩 증가 */
+            }
+            .mobile-menu-dropdown {
+                display: none !important; /* PC에서는 드롭다운 메뉴 숨김 */
+            }
+        }
     </style>
 </head>
 <body>
@@ -203,15 +296,22 @@
                 Recore AI
             </div>
             
-            <div class="header-center">
-                </div>
+            <div class="header-center pc-menu-links">
+                <a href="project" class="action-btn">프로젝트</a>
+                <a href="team" class="action-btn">팀 리코어</a>
+            </div>
         </div>
         
-        <div class="header-icon menu-icon" aria-label="메뉴" style="visibility: visible;"> 
+        <div class="header-icon menu-icon mobile-only" aria-label="메뉴"> 
             <span class="material-symbols-rounded">menu</span>
         </div>
         
     </header>
+
+    <div class="mobile-menu-dropdown" id="mobileDropdown">
+        <a href="project">프로젝트</a>
+        <a href="team">팀 리코어</a>
+    </div>
 
     <main>
         <img src="https://i.postimg.cc/Sx7RLZYK/recore.png" alt="Recore AI Logo" class="top-image">
@@ -229,16 +329,34 @@
         document.addEventListener('DOMContentLoaded', () => {
             const projectButtonContainer = document.querySelector('.project-button-container');
             const projectButton = document.querySelector('.project-btn');
-            const targetUrl = projectButton.getAttribute('href'); 
-            const transitionDuration = 500; // 0.5초
+            const menuIcon = document.querySelector('.menu-icon');
+            const mobileDropdown = document.getElementById('mobileDropdown');
+            const pcBreakpoint = 769; // PC 전환 기준 (CSS와 일치)
 
-            // MinsuGPT 서버상태 링크 텍스트 유지
+            // MinsuGPT 서버상태 링크 텍스트 유지 (기존 로직 유지)
             const serverStatusLink = document.querySelector('.server-status-link');
             if(serverStatusLink) {
                 serverStatusLink.textContent = 'Recore AI 서버상태';
             }
+
+            // --- 모바일 메뉴 드롭다운 토글 기능 ---
+            if (menuIcon && mobileDropdown) {
+                menuIcon.addEventListener('click', () => {
+                    mobileDropdown.classList.toggle('is-open');
+                });
+            }
+            
+            // --- 화면 크기 변경 감지 (PC/모바일 전환 시 드롭다운 닫기) ---
+            const closeDropdownOnResize = () => {
+                if (window.innerWidth >= pcBreakpoint && mobileDropdown.classList.contains('is-open')) {
+                    mobileDropdown.classList.remove('is-open');
+                }
+            };
+
+            window.addEventListener('resize', closeDropdownOnResize);
         });
     </script>
+    
     <style>
 /* 텍스트 링크의 기본 스타일 */
 .server-status-link {
@@ -260,4 +378,4 @@
 </style>
 
 </body>
-</html>
+    </html>
