@@ -75,6 +75,29 @@ body {
 .header-right-group { display: flex; align-items: center; gap: 10px; }
 .header-center { text-align: left; display: flex; justify-content: flex-start; align-items: center; margin-left: 10px; }
 
+/* --- 메뉴 활성화 링크 스타일 추가 --- */
+.action-btn.active-link {
+    background-color: var(--pink-accent); 
+    color: #ffffff; 
+    font-weight: 700;
+}
+
+.action-btn.active-link:hover {
+    color: #ffffff; 
+    background-color: var(--darker-pink);
+}
+
+.mobile-menu-dropdown a.active-link {
+    background-color: var(--pink-accent); 
+    color: #ffffff; 
+    border: 1px solid var(--pink-accent);
+}
+
+.mobile-menu-dropdown a.active-link:hover {
+    background-color: var(--darker-pink);
+}
+/* ------------------------------------------- */
+
 /* PC 액션 버튼 스타일 */
 .action-btn { 
     background-color: transparent; 
