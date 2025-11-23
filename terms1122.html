@@ -23,7 +23,7 @@
             --blue-accent: #1d6fef;
             --yellow-accent: #ffc107;
             
-            --pink-accent: #ff69b4; 
+            --pink-accent: #ff69b4; /* 👈 핑크색 변수 */
             --light-pink: #ffe6f0; 
             --darker-pink: #ff99cc; 
 
@@ -100,7 +100,8 @@
         }
 
         .doc-detail-meta {
-            color: var(--doc-date-color);
+            /* 🚀 텍스트 색상을 핑크색으로 변경 */
+            color: var(--pink-accent);
             font-size: 0.9em;
             font-weight: 500;
             margin-bottom: 30px;
@@ -114,32 +115,37 @@
 
         /* Google Docs 임베딩을 위한 컨테이너 */
         .doc-detail-content {
-            /* <iframe>에 명시적인 height가 있으므로, min-height를 <iframe> 크기에 맞춰 조정 */
+            /* <iframe> 높이(1000px)보다 조금 더 크게 설정 */
             min-height: 1050px; 
             width: 100%;
             display: flex; /* 중앙 정렬을 위해 추가 */
             justify-content: center; /* 중앙 정렬을 위해 추가 */
         }
 
-        /* <iframe>의 크기를 HTML 속성으로 지정하므로, 이 CSS는 주석 처리하거나 제거할 수 있습니다. 
-           여기서는 테두리 스타일만 유지합니다. */
+        /* <iframe>의 크기를 HTML 속성으로 지정하므로, 이 CSS는 테두리 스타일만 유지 */
         .doc-embed-iframe {
             border: 1px solid #ddd; 
             border-radius: 8px;
             display: block;
         }
 
-        /* 반응형 */
+        /* ------------------------------------------- */
+        /* 🚀 모바일에서 크기가 작아지는 문제 해결을 위한 CSS */
+        /* ------------------------------------------- */
         @media (max-width: 900px) {
-            /* 900px 이하에서는 iframe이 화면을 벗어나지 않도록 너비와 높이를 100%로 강제 변경 */
+            /* 900px 이하에서는 HTML의 고정된 width/height 속성을 무시하고 화면에 맞춤 */
             .doc-detail-content { 
                 min-height: 1000px; 
             }
             .doc-detail-content iframe {
+                /* ⚠️ 이 부분이 모바일에서 꽉 차게 만드는 핵심입니다. */
                 width: 100% !important;
-                height: 100% !important;
+                height: 1000px !important; /* 모바일에서도 높이는 1000px로 유지 */
+                margin: 0; 
             }
         }
+        
+        /* 768px 이하 모바일용 추가 스타일 */
         @media (max-width: 768px) {
             .pc-menu-links { display: none; }
             .mobile-only { visibility: visible; display: flex; }
@@ -205,7 +211,7 @@
                 <span class="material-symbols-rounded" style="font-size: 18px;">calendar_month</span>
                 <span>게시일: 2025년 11월 22일</span>
                 <span style="margin-left: 10px;">|</span>
-                <span style="margin-left: 10px;">작성: ADMIN</span>
+                <span style="margin-left: 10px;">작성: 신재원</span>
             </div>
             
             <div class="doc-detail-content">
