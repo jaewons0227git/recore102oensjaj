@@ -32,10 +32,11 @@
             --doc-date-color: #6c757d; 
             --input-border: #ced4da;
             --input-focus-border: var(--pink-accent);
+            --select-bg: #ffffff; /* 드롭다운 배경색 */
         }
 
         /* 폰트 적용 */
-        body :is(.header-title, .plus-btn, .action-btn, .message-text, .input-container textarea, .modal-grid-item, .modal-option, .thinking-indicator-text, button, .project-card, .project-page-title, .doc-card-title, .doc-card-description, .doc-card-date, .search-input, .date-input-field) {
+        body :is(.header-title, .plus-btn, .action-btn, .message-text, .input-container textarea, .modal-grid-item, .modal-option, .thinking-indicator-text, button, .project-card, .project-page-title, .doc-card-title, .doc-card-description, .doc-card-date, .search-input, .date-input-field, .sort-dropdown-display) {
             font-family: 'Elms Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', 'Helvetica Neue', Arial, sans-serif;
         }
 
@@ -94,11 +95,13 @@
             margin-bottom: 20px;
             margin-left: 10px; 
             align-items: center;
+            flex-wrap: wrap; /* 정렬 드롭다운 추가에 따른 줄바꿈 허용 */
         }
 
         .search-container {
             flex-grow: 1;
             position: relative;
+            min-width: 150px; /* PC에서 최소 너비 설정 */
         }
 
         .search-input {
@@ -164,7 +167,79 @@
             box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.2);
         }
 
-        /* --- 문서 카드 스타일 --- (이전과 동일) */
+        /* --- 정렬 드롭다운 스타일 (추가됨) --- */
+        .sort-dropdown-container {
+            position: relative;
+            z-index: 50; /* 검색 및 날짜 필터 위에 표시되도록 */
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        
+        .sort-dropdown-display {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 10px 15px;
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            background-color: var(--select-bg);
+            color: var(--accent);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        
+        .sort-dropdown-display:hover {
+            border-color: var(--pink-accent);
+        }
+        
+        .sort-dropdown-display.active {
+            border-color: var(--input-focus-border);
+            box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.2);
+        }
+        
+        .sort-dropdown-list {
+            position: absolute;
+            top: calc(100% + 5px);
+            right: 0;
+            list-style: none;
+            margin: 0;
+            padding: 5px 0;
+            background-color: var(--select-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            min-width: 150px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+        }
+        
+        .sort-dropdown-container.open .sort-dropdown-list {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .sort-dropdown-list-item {
+            padding: 10px 15px;
+            font-size: 16px;
+            color: var(--accent);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .sort-dropdown-list-item:hover,
+        .sort-dropdown-list-item.selected {
+            background-color: var(--light-pink);
+            color: var(--pink-accent);
+            font-weight: 700;
+        }
+
+
+        /* --- 문서 카드 스타일 --- */
         .doc-grid { display: grid; grid-template-columns: 1fr; gap: 15px; width: 100%; }
         .doc-card-link { text-decoration: none; color: inherit; display: block; height: 100%; }
         .doc-card { background: var(--doc-card-bg); border: 1px solid #e0eeef; border-radius: 12px; padding: 15px 20px; text-align: left; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s, opacity 0.4s; height: 100%; display: flex; flex-direction: column; justify-content: center; }
@@ -184,25 +259,36 @@
             .mobile-only { visibility: visible; display: flex; }
             .page-title { font-size: 1.8em; margin-top: 15px; margin-bottom: 15px; margin-left: 0; }
             
-            /* [요청 2: 왼쪽 정렬] filter-controls의 자식 요소를 왼쪽으로 정렬 */
+            /* filter-controls의 자식 요소를 왼쪽으로 정렬하고 줄바꿈 */
             .filter-controls { 
                 flex-direction: column; 
                 gap: 10px; 
                 margin-left: 0;
-                align-items: flex-start; /* 검색창과 날짜 그룹을 왼쪽으로 정렬 */
+                align-items: flex-start;
             }
             .search-container { 
                 order: 1; 
-                width: 100%; /* 검색창은 여전히 100% 너비 유지 */
+                width: 100%; 
             }
             .date-filter-group { 
                 order: 2; 
-                /* [요청 1: 간격 축소] justify-content를 space-between에서 flex-start로 변경 */
                 justify-content: flex-start; 
-                width: auto; /* 내용물(입력 필드) 크기에 맞게 너비 축소 */
+                width: 100%; /* 너비를 100%로 늘려 flex-wrap이 제대로 작동하도록 */
+                flex-wrap: wrap;
             }
             .date-input-field {
                 width: 70px;  
+            }
+            .sort-dropdown-container {
+                order: 3; /* 맨 아래로 이동 */
+                width: 100%; /* 너비 100% 사용 */
+                margin-top: 5px;
+            }
+            .sort-dropdown-list {
+                right: auto; /* PC에서 오른쪽 정렬 제거 */
+                left: 0; /* 왼쪽 정렬 */
+                width: 100%; /* 모바일에서 가로 폭 채우기 */
+                min-width: 100%;
             }
         }
 
@@ -214,6 +300,10 @@
             .mobile-menu-dropdown { display: none !important; }
             .doc-grid { grid-template-columns: repeat(2, 1fr); max-width: 100%; margin: 0; }
             .page-title { margin-left: 0; }
+            .date-filter-group {
+                /* PC에서는 줄바꿈 방지 */
+                flex-wrap: nowrap;
+            }
         }
         
         .mobile-only { visibility: hidden; }
@@ -223,124 +313,135 @@
     </style>
 </head>
 <body>
-  <div class="phone" role="application" aria-label="CorerepubliX Docs UI">
-    
-    <header class="header" id="mainHeader">
+    <div class="phone" role="application" aria-label="CorerepubliX Docs UI">
         
-        <div class="header-left-group">
-            <div class="header-title">
-                <a href="index.html">CorerepubliX</a>
+        <header class="header" id="mainHeader">
+            
+            <div class="header-left-group">
+                <div class="header-title">
+                    <a href="index.html">CorerepubliX</a>
+                </div>
+                
+                <div class="header-center pc-menu-links">
+                    <a href="index" class="action-btn">홈</a>
+                    <a href="project" class="action-btn">프로젝트</a>
+                    <a href="team" class="action-btn">팀 코어리퍼블릭스</a>
+                    <a href="terms" class="action-btn">약관</a>
+                    <a href="docs" class="action-btn active-link">문서</a>
+                </div>
             </div>
             
-            <div class="header-center pc-menu-links">
-                <a href="index" class="action-btn">홈</a>
-                <a href="project" class="action-btn">프로젝트</a>
-                <a href="team" class="action-btn">팀 코어리퍼블릭스</a>
-                <a href="terms" class="action-btn">약관</a>
-                <a href="docs" class="action-btn active-link">문서</a>
+            <div class="header-icon menu-icon mobile-only" aria-label="메뉴"> 
+                <span class="material-symbols-rounded">menu</span>
             </div>
-        </div>
-        
-        <div class="header-icon menu-icon mobile-only" aria-label="메뉴"> 
-            <span class="material-symbols-rounded">menu</span>
-        </div>
-        
-    </header>
+            
+        </header>
 
-    <div class="mobile-menu-dropdown" id="mobileDropdown">
-        <a href="index">홈</a>
-        <a href="project">프로젝트</a>
-        <a href="team">팀 코어리퍼블릭스</a>
-        <a href="terms">약관</a>
-        <a href="docs" class="active-link">문서</a>
+        <div class="mobile-menu-dropdown" id="mobileDropdown">
+            <a href="index">홈</a>
+            <a href="project">프로젝트</a>
+            <a href="team">팀 코어리퍼블릭스</a>
+            <a href="terms">약관</a>
+            <a href="docs" class="active-link">문서</a>
+        </div>
+
+        <main>
+            <div class="page-title">
+                Docs
+            </div>
+            
+            <div class="filter-controls">
+                <div class="search-container">
+                    <span class="material-symbols-rounded search-icon">search</span>
+                    <input type="text" id="searchInput" class="search-input" placeholder="문서 제목, 설명 검색...">
+                </div>
+                
+                <div class="date-filter-group">
+                    <span class="material-symbols-rounded" style="font-size: 18px; color: #555;">calendar_month</span>
+                    
+                    <input type="number" id="filterYear" name="year" class="date-input-field" placeholder="YYYY" maxlength="4" min="2000" max="2099">
+                    <label for="filterYear">년</label>
+                    
+                    <input type="number" id="filterMonth" name="month" class="date-input-field" placeholder="MM" maxlength="2" min="1" max="12">
+                    <label for="filterMonth">월</label>
+                    
+                    <input type="number" id="filterDay" name="day" class="date-input-field" placeholder="DD" maxlength="2" min="1" max="31">
+                    <label for="filterDay">일</label>
+                </div>
+
+                <div class="sort-dropdown-container" id="sortDropdownContainer">
+                    <div class="sort-dropdown-display" id="sortDropdownDisplay">
+                        <span class="material-symbols-rounded">sort</span>
+                        <span id="sortDisplayText">최신순</span>
+                    </div>
+                    <ul class="sort-dropdown-list" id="sortDropdownList" role="listbox" aria-expanded="false">
+                        <li class="sort-dropdown-list-item selected" data-sort-value="desc" role="option" aria-selected="true">최신순</li>
+                        <li class="sort-dropdown-list-item" data-sort-value="asc" role="option" aria-selected="false">오래된순</li>
+                    </ul>
+                </div>
+
+            </div>
+            
+            <div class="doc-grid" id="docGrid">
+                
+                <a href="minsugptrun" class="doc-card-link" data-sort-key="20251123">
+                    <div class="doc-card" data-published="2025.11.23">
+                        <h2 class="doc-card-title">MinsuGPT 구동방식 관련 문서</h2>
+                        
+                        <p class="doc-card-description">
+                            MinsuGPT 구동방식에 관한 설명을 참조하십시오.
+                        </p>
+
+                        <div class="doc-card-footer">
+                            <span class="doc-card-date">
+                                <span class="material-symbols-rounded" style="font-size: 18px;">calendar_month</span>
+                                2025.11.23
+                            </span>
+                            <span class="material-symbols-rounded doc-card-arrow">arrow_forward</span>
+                        </div>
+                    </div>
+                </a>
+
+                
+                <a href="terms1122" class="doc-card-link" data-sort-key="20251122">
+                    <div class="doc-card" data-published="2025.11.22"> <h2 class="doc-card-title">이용약관 및 개인정보 보호정책 2025.11.22 개정</h2>
+                        
+                        <p class="doc-card-description">
+                            서비스 이용에 필요한 필수 약관 및 사용자 정보 보호에 대한 정책을 확인하세요.
+                        </p>
+
+                        <div class="doc-card-footer">
+                            <span class="doc-card-date">
+                                <span class="material-symbols-rounded" style="font-size: 18px;">calendar_month</span>
+                                2025.11.22
+                            </span>
+                            <span class="material-symbols-rounded doc-card-arrow">arrow_forward</span>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="doc-new-feature.html" class="doc-card-link" data-sort-key="20251123_b"> <div class="doc-card" data-published="2025.11.23">
+                        <h2 class="doc-card-title">새로운 기능 베타 테스트 참여 안내</h2>
+                        
+                        <p class="doc-card-description">
+                            CorerepubliX의 다음 버전 주요 업데이트 기능을 미리 사용해 볼 수 있는 방법입니다.
+                        </p>
+
+                        <div class="doc-card-footer">
+                            <span class="doc-card-date">
+                                <span class="material-symbols-rounded" style="font-size: 18px;">calendar_month</span>
+                                2025.11.23
+                            </span>
+                            <span class="material-symbols-rounded doc-card-arrow">arrow_forward</span>
+                        </div>
+                    </div>
+                </a>
+                
+            </div>
+            
+        </main>
+        
     </div>
-
-    <main>
-        <div class="page-title">
-            Docs
-        </div>
-        
-        <div class="filter-controls">
-            <div class="search-container">
-                <span class="material-symbols-rounded search-icon">search</span>
-                <input type="text" id="searchInput" class="search-input" placeholder="문서 제목, 설명 검색...">
-            </div>
-            
-            <div class="date-filter-group">
-                <span class="material-symbols-rounded" style="font-size: 18px; color: #555;">calendar_month</span>
-                
-                <input type="number" id="filterYear" name="year" class="date-input-field" placeholder="YYYY" maxlength="4" min="2000" max="2099">
-                <label for="filterYear">년</label>
-                
-                <input type="number" id="filterMonth" name="month" class="date-input-field" placeholder="MM" maxlength="2" min="1" max="12">
-                <label for="filterMonth">월</label>
-                
-                <input type="number" id="filterDay" name="day" class="date-input-field" placeholder="DD" maxlength="2" min="1" max="31">
-                <label for="filterDay">일</label>
-            </div>
-        </div>
-        
-        <div class="doc-grid" id="docGrid">
-            
-            <a href="minsugptrun" class="doc-card-link">
-                <div class="doc-card" data-published="2025.11.23">
-                    <h2 class="doc-card-title">MinsuGPT 구동방식 관련 문서</h2>
-                    
-                    <p class="doc-card-description">
-                        MinsuGPT 구동방식에 관한 설명을 참조하십시오.
-                    </p>
-
-                    <div class="doc-card-footer">
-                        <span class="doc-card-date">
-                            <span class="material-symbols-rounded" style="font-size: 18px;">calendar_month</span>
-                            2025.11.23
-                        </span>
-                        <span class="material-symbols-rounded doc-card-arrow">arrow_forward</span>
-                    </div>
-                </div>
-            </a>
-
-            
-            <a href="terms1122" class="doc-card-link">
-                <div class="doc-card" data-published="2025.11.22"> <h2 class="doc-card-title">이용약관 및 개인정보 보호정책 2025.11.22 개정</h2>
-                    
-                    <p class="doc-card-description">
-                        서비스 이용에 필요한 필수 약관 및 사용자 정보 보호에 대한 정책을 확인하세요.
-                    </p>
-
-                    <div class="doc-card-footer">
-                        <span class="doc-card-date">
-                            <span class="material-symbols-rounded" style="font-size: 18px;">calendar_month</span>
-                            2025.11.22
-                        </span>
-                        <span class="material-symbols-rounded doc-card-arrow">arrow_forward</span>
-                    </div>
-                </div>
-            </a>
-            
-            <a href="doc-new-feature.html" class="doc-card-link">
-                <div class="doc-card" data-published="2025.11.23">
-                    <h2 class="doc-card-title">새로운 기능 베타 테스트 참여 안내</h2>
-                    
-                    <p class="doc-card-description">
-                        CorerepubliX의 다음 버전 주요 업데이트 기능을 미리 사용해 볼 수 있는 방법입니다.
-                    </p>
-
-                    <div class="doc-card-footer">
-                        <span class="doc-card-date">
-                            <span class="material-symbols-rounded" style="font-size: 18px;">calendar_month</span>
-                            2025.11.23
-                        </span>
-                        <span class="material-symbols-rounded doc-card-arrow">arrow_forward</span>
-                    </div>
-                </div>
-            </a>
-            
-        </div>
-        
-    </main>
-    
-  </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -354,10 +455,42 @@
             const filterMonth = document.getElementById('filterMonth');
             const filterDay = document.getElementById('filterDay');
             const docGrid = document.getElementById('docGrid');
-            const docCards = docGrid.querySelectorAll('.doc-card');
+            let docCards = Array.from(docGrid.querySelectorAll('.doc-card-link')); // 정렬을 위해 Array.from으로 변경
 
-            // --- 필터링 및 검색 로직 ---
-            const filterDocs = () => {
+            // 정렬 드롭다운 요소
+            const sortDropdownContainer = document.getElementById('sortDropdownContainer');
+            const sortDropdownDisplay = document.getElementById('sortDropdownDisplay');
+            const sortDropdownList = document.getElementById('sortDropdownList');
+            const sortDropdownItems = Array.from(sortDropdownList.querySelectorAll('.sort-dropdown-list-item'));
+            const sortDisplayText = document.getElementById('sortDisplayText');
+            
+            let currentSort = 'desc'; // 기본: 최신순 (DESCending)
+
+            // --- 정렬 로직 ---
+            const sortDocs = (sortOrder) => {
+                currentSort = sortOrder;
+
+                // 1. 문서 배열 정렬
+                docCards.sort((a, b) => {
+                    const keyA = a.getAttribute('data-sort-key') || a.querySelector('.doc-card').getAttribute('data-published').replace(/\./g, '');
+                    const keyB = b.getAttribute('data-sort-key') || b.querySelector('.doc-card').getAttribute('data-published').replace(/\./g, '');
+
+                    if (keyA < keyB) return sortOrder === 'desc' ? 1 : -1; // 최신순: B가 더 크면(최신이면) B가 앞으로
+                    if (keyA > keyB) return sortOrder === 'desc' ? -1 : 1;
+                    return 0;
+                });
+
+                // 2. DOM 업데이트 (정렬된 순서대로 재배치)
+                docCards.forEach(card => {
+                    docGrid.appendChild(card);
+                });
+
+                // 3. 필터링 다시 적용 (정렬 후 표시/숨김 상태 유지)
+                filterDocs(false); // 재정렬 후에는 필터만 적용 (다시 정렬하지 않음)
+            };
+
+            // --- 필터링 로직 ---
+            const filterDocs = (shouldSort = true) => {
                 const searchTerm = searchInput.value.toLowerCase().trim();
                 
                 // 입력된 날짜 값을 YYYY.MM.DD 형식으로 만듭니다. 
@@ -377,34 +510,89 @@
                     }
                 }
 
-                docCards.forEach(card => {
+                // 1. 필터링 적용
+                docCards.forEach(cardLink => {
+                    const card = cardLink.querySelector('.doc-card');
                     const title = card.querySelector('.doc-card-title').textContent.toLowerCase();
                     const description = card.querySelector('.doc-card-description').textContent.toLowerCase();
                     const publishedDate = card.getAttribute('data-published'); // YYYY.MM.DD 형식
                     
-                    // 1. 검색어 일치 확인
+                    // a. 검색어 일치 확인
                     const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
                     
-                    // 2. 날짜 필터 일치 확인: publishedDate가 filterDate로 시작하는지 확인
+                    // b. 날짜 필터 일치 확인: publishedDate가 filterDate로 시작하는지 확인
                     const matchesDate = !filterDate || publishedDate.startsWith(filterDate);
                     
                     // 두 조건 모두 만족 시 표시, 아니면 숨김
                     if (matchesSearch && matchesDate) {
-                        card.parentNode.style.display = 'block'; 
+                        cardLink.style.display = 'block'; 
                         card.classList.remove('hidden'); 
                     } else {
-                        card.parentNode.style.display = 'none'; 
+                        cardLink.style.display = 'none'; 
                         card.classList.add('hidden'); 
                     }
                 });
-            };
 
-            // 검색어 입력 및 날짜 입력 시 필터 함수 실행
-            searchInput.addEventListener('input', filterDocs);
-            filterYear.addEventListener('input', filterDocs);
-            filterMonth.addEventListener('input', filterDocs);
-            filterDay.addEventListener('input', filterDocs);
+                // 2. 정렬 필요 시 정렬 실행
+                if (shouldSort) {
+                    sortDocs(currentSort);
+                }
+            };
             
+            // --- 이벤트 리스너 설정 ---
+
+            // 검색어 입력 및 날짜 입력 시 필터 함수 실행 (정렬도 포함)
+            searchInput.addEventListener('input', () => filterDocs(true));
+            filterYear.addEventListener('input', () => filterDocs(true));
+            filterMonth.addEventListener('input', () => filterDocs(true));
+            filterDay.addEventListener('input', () => filterDocs(true));
+
+
+            // --- 정렬 드롭다운 기능 ---
+
+            sortDropdownDisplay.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sortDropdownContainer.classList.toggle('open');
+                sortDropdownDisplay.classList.toggle('active');
+                sortDropdownList.setAttribute('aria-expanded', sortDropdownContainer.classList.contains('open'));
+            });
+
+            sortDropdownItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const newSortValue = e.target.getAttribute('data-sort-value');
+                    const newSortText = e.target.textContent;
+
+                    if (newSortValue !== currentSort) {
+                        // 선택된 값으로 정렬 실행
+                        sortDocs(newSortValue);
+                        
+                        // 드롭다운 UI 업데이트
+                        sortDisplayText.textContent = newSortText;
+                        sortDropdownItems.forEach(i => i.classList.remove('selected'));
+                        e.target.classList.add('selected');
+
+                        // ARIA 속성 업데이트
+                        sortDropdownItems.forEach(i => i.setAttribute('aria-selected', 'false'));
+                        e.target.setAttribute('aria-selected', 'true');
+                    }
+                    
+                    // 드롭다운 닫기
+                    sortDropdownContainer.classList.remove('open');
+                    sortDropdownDisplay.classList.remove('active');
+                    sortDropdownList.setAttribute('aria-expanded', 'false');
+                });
+            });
+
+            // 외부 클릭 시 드롭다운 닫기
+            document.addEventListener('click', (e) => {
+                if (!sortDropdownContainer.contains(e.target)) {
+                    sortDropdownContainer.classList.remove('open');
+                    sortDropdownDisplay.classList.remove('active');
+                    sortDropdownList.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+
             // --- 기존 메뉴 토글 기능 ---
             if (menuIcon && mobileDropdown) {
                 menuIcon.addEventListener('click', (e) => {
@@ -429,8 +617,9 @@
 
             window.addEventListener('resize', closeDropdownOnResize);
             
-            // 초기 필터 적용 (모든 문서 표시)
-            filterDocs();
+            // 초기 정렬 및 필터 적용 (최신순이 기본)
+            sortDocs(currentSort);
+            filterDocs(false); // 정렬은 이미 했으니 필터만 적용
         });
     </script>
 </body>
