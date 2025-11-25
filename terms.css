@@ -47,6 +47,7 @@ body {
 }
 
 /* --- 헤더 스타일 --- */
+/* team.css에서 가져옴 */
 .header{
     display:flex; 
     justify-content:space-between; 
@@ -64,18 +65,24 @@ body {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); 
 }
 
+/* team.css에서 가져옴 */
 .header-icon{ 
     width:32px; height:32px; display:flex; align-items:center; justify-content:center; color:#111827; cursor: pointer; flex-shrink: 0; 
 }
+/* team.css에서 가져옴 */
 .header-left-group { display: flex; align-items: center; }
+/* team.css에서 가져옴 */
 .header-title a { 
     font-size: 18px; font-weight: 600; color: var(--accent); margin-left: 0; flex-shrink: 0; 
     text-decoration: none; 
 }
+/* team.css에서 가져옴 */
 .header-right-group { display: flex; align-items: center; gap: 10px; }
+/* team.css에서 가져옴 */
 .header-center { text-align: left; display: flex; justify-content: flex-start; align-items: center; margin-left: 10px; }
 
 /* PC 액션 버튼 스타일 */
+/* team.css에서 가져옴 */
 .action-btn { 
     background-color: transparent; 
     color: var(--accent); 
@@ -93,28 +100,30 @@ body {
     transition: color 0.2s;
 }
 
+/* team.css에서 가져옴 */
 .action-btn:hover {
     color: var(--pink-accent); 
 }
 
 /* --- 메뉴 활성화 링크 스타일 추가 --- */
+/* team.css에서 가져옴 */
 .action-btn.active-link {
     background-color: var(--pink-accent); 
     color: #ffffff; 
     font-weight: 700;
 }
-
+/* team.css에서 가져옴 */
 .action-btn.active-link:hover {
     color: #ffffff; 
     background-color: var(--darker-pink);
 }
-
+/* team.css에서 가져옴 */
 .mobile-menu-dropdown a.active-link {
     background-color: var(--pink-accent); 
     color: #ffffff; 
     border: 1px solid var(--pink-accent);
 }
-
+/* team.css에서 가져옴 */
 .mobile-menu-dropdown a.active-link:hover {
     background-color: var(--darker-pink);
 }
@@ -122,6 +131,7 @@ body {
 
 
 /* PC 버전 메뉴 링크 컨테이너 */
+/* team.css에서 가져옴 */
 .pc-menu-links {
     display: flex; 
     align-items: center; 
@@ -129,6 +139,7 @@ body {
 }
 
 /* --- 모바일 드롭다운 메뉴 스타일 --- */
+/* team.css에서 가져옴 */
 .mobile-menu-dropdown {
     position: fixed;
     top: var(--header-height); 
@@ -149,7 +160,7 @@ body {
     
     padding: 0 16px; 
 }
-
+/* team.css에서 가져옴 */
 .mobile-menu-dropdown.is-open {
     max-height: 400px; 
     opacity: 1;
@@ -158,7 +169,7 @@ body {
                 opacity 0.4s ease-in, 
                 padding 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
+/* team.css에서 가져옴 */
 .mobile-menu-dropdown a {
     display: block;
     margin-bottom: 10px; 
@@ -175,12 +186,12 @@ body {
     
     transition: background-color 0.2s, transform 0.1s;
 }
-
+/* team.css에서 가져옴 */
 .mobile-menu-dropdown a:hover {
     background-color: #ffdaeb; 
     transform: translateY(-1px);
 }
-
+/* team.css에서 가져옴 */
 .mobile-menu-dropdown a:last-child {
     margin-bottom: 0;
 }
