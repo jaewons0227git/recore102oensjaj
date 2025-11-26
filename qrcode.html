@@ -8,7 +8,7 @@
   :root{--bg:#f7f8fa;--card:#fff;--muted:#6b7280}
   
   /* ================================================= */
-  /* ✅ 스크롤 짤림 해결을 위한 CSS 수정 */
+  /* ✅ 스크롤 짤림 해결 및 모바일 최적화를 위한 CSS 수정 */
   /* ================================================= */
   html,body{min-height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial}
   body{
@@ -18,6 +18,8 @@
     align-items: center; 
     justify-content: flex-start; 
     padding:24px;
+    min-height: 100vh; /* 뷰포트 전체 높이 확보 */
+    box-sizing: border-box; /* padding이 전체 크기에 포함되도록 */
   }
   .card{
     width:100%;
@@ -26,6 +28,7 @@
     border-radius:14px;
     padding:20px;
     box-shadow:0 8px 30px rgba(12,18,40,0.08);
+    box-sizing: border-box; /* padding이 전체 크기에 포함되도록 */
   }
   
   /* 나머지 스타일은 기존 및 수정된 내용 유지 */
@@ -37,7 +40,6 @@
   textarea{min-height:120px;resize:vertical}
   .controls{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
   .preview{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px;border-radius:12px;border:1px dashed #eef2ff;height:100%}
-  /* .preview img의 기존 max-width: 100%는 그대로 유지 */
   .preview img, .preview svg{max-width:100%;height:auto} 
   .row{display:flex;gap:8px;margin-top:10px}
   button{cursor:pointer;padding:10px 12px;border-radius:10px;border:0;background:#111;color:#fff}
@@ -85,6 +87,8 @@
     align-items: center; 
     margin-top: 12px; 
   }
+  
+  /* ✅ 파일 이름이 길 때 ... 표시되도록 수정 */
   .custom-file-upload {
     cursor: pointer;
     padding: 8px 10px; 
@@ -98,7 +102,8 @@
     text-align: center;
     overflow: hidden; 
     white-space: nowrap;
-    text-overflow: ellipsis;
+    text-overflow: ellipsis; /* 긴 텍스트 줄임표 처리 */
+    max-width: calc(100% - 78px); /* 삭제 버튼 공간 확보 */
   }
   #logoInput { display: none; } 
 
@@ -118,29 +123,32 @@
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    width: 14px;
-    height: 14px;
-    border: 1px solid #999;
-    border-radius: 3px;
+    width: 16px; 
+    height: 16px; 
+    border: 2px solid #999; 
+    border-radius: 4px; 
     margin: 0;
     display: inline-block;
     vertical-align: middle;
     position: relative;
     background: #fff;
-    transition: background 0.1s;
+    transition: all 0.1s;
   }
   .checkbox-label input[type="checkbox"]:checked {
     background: #111; 
     border-color: #111;
   }
+  /* 모던한 체크 아이콘 (V자 border 트릭 사용) */
   .checkbox-label input[type="checkbox"]:checked::after {
-    content: '✓'; 
-    color: #fff;
-    font-size: 10px;
-    line-height: 14px;
+    content: ''; 
     position: absolute;
-    top: 0;
+    top: 3px;
     left: 2px;
+    width: 5px;
+    height: 8px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
   }
 
   /* 파일 인풋의 파일 이름 표시용 */
@@ -155,12 +163,21 @@
     width: 100%;
     max-width: 800px;
   }
+  
+  /* ✅ 로고 삭제 버튼 스타일 */
+  #removeLogo {
+    width: 60px; /* 고정 너비 */
+    flex-shrink: 0;
+    padding: 8px 10px;
+    font-size: 13px;
+  }
 
 
   @media (max-width:820px){
-    .grid{grid-template-columns:1fr;}.preview{order:-1}
+    /* ✅ 모바일: QR 코드 미리보기가 아래로 오도록 order:-1 제거 */
+    .grid{grid-template-columns:1fr;}
     
-    /* ✅ 모바일 QR 이미지 크기 조정 */
+    /* ✅ 모바일 QR 이미지 크기 조정 및 중앙 정렬 */
     #qrImg {
       max-width: 80% !important; 
     }
@@ -227,6 +244,7 @@
             가운데 로고 이미지 선택...
           </label>
           <input type="file" id="logoInput" accept="image/*">
+          <button id="removeLogo" class="secondary small" style="display:none">삭제</button> 
         </div>
         <div id="fileNameDisplay" class="file-name-display">선택된 파일 없음</div>
 
@@ -275,29 +293,48 @@ const loadingEl = document.getElementById('loading');
 const errorEl = document.getElementById('errorMsg');
 const transparentEl = document.getElementById('transparent');
 const logoInput = document.getElementById('logoInput');
+const removeLogoBtn = document.getElementById('removeLogo'); // ✅ 새 요소
+const logoLabelEl = document.querySelector('.custom-file-upload'); // 레이블 엘리먼트 
 
 const fgCodeEl = document.getElementById('fg-code');
 const bgCodeEl = document.getElementById('bg-code');
 const fileNameDisplay = document.getElementById('fileNameDisplay'); 
 
 let logoData = null; // data URL
+
+// =========================================================
+// ✅ 로고 파일 선택 이벤트 핸들러 수정
+// =========================================================
 logoInput.addEventListener('change', e => {
   const file = e.target.files[0];
-  const labelEl = document.querySelector('.custom-file-upload');
   
   if (!file) { 
-    logoData = null; 
-    fileNameDisplay.textContent = '선택된 파일 없음';
-    labelEl.textContent = '가운데 로고 이미지 선택...';
+    handleLogoRemoval(); // 파일 선택 취소 시 제거 처리
     return; 
   }
-  fileNameDisplay.textContent = file.name; // 파일 이름 표시
-  labelEl.textContent = file.name; // 레이블 텍스트도 파일 이름으로 변경
+  
+  // 파일 이름 표시 (줄임표는 CSS가 처리)
+  fileNameDisplay.textContent = file.name; 
+  logoLabelEl.textContent = file.name; 
+  removeLogoBtn.style.display = 'inline-block'; // 삭제 버튼 표시
   
   const reader = new FileReader();
   reader.onload = () => { logoData = reader.result; };
   reader.readAsDataURL(file);
 });
+
+// =========================================================
+// ✅ 로고 삭제 기능 추가
+// =========================================================
+function handleLogoRemoval() {
+  logoData = null; 
+  logoInput.value = ''; // 파일 input 초기화
+  fileNameDisplay.textContent = '선택된 파일 없음';
+  logoLabelEl.textContent = '가운데 로고 이미지 선택...';
+  removeLogoBtn.style.display = 'none'; // 삭제 버튼 숨기기
+}
+removeLogoBtn.addEventListener('click', handleLogoRemoval);
+
 
 // Function to update color code display
 function updateColorDisplay(inputElement, codeElement) {
@@ -383,13 +420,15 @@ async function generate(format='png'){
       const x = (canvas.width - logoSize)/2;
       const y = (canvas.height - logoSize)/2;
 
-      // draw rounded rect background (optional white ring for contrast)
-      const radius = Math.round(logoSize * 0.12);
-      // optional white padding behind logo for visibility
+      // draw rounded rect background 
+      // 로고 배경 곡률 높이고, 투명도 0 (불투명 흰색)
+      const radius = Math.round(logoSize * 0.25); 
+      const pad = Math.round(logoSize * 0.15); 
+      
       ctx.save();
-      // draw white rounded rect slightly larger than logo for contrast
-      const pad = Math.round(logoSize * 0.12);
-      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      // 불투명한 흰색 배경
+      ctx.fillStyle = 'rgba(255,255,255,1)'; 
+      // 약간 더 큰 크기로 배경 흰색 둥근 사각형 그리기
       roundRect(ctx, x - pad/2, y - pad/2, logoSize + pad, logoSize + pad, radius + 2);
       ctx.fill();
       ctx.restore();
@@ -477,10 +516,21 @@ downloadSvg.addEventListener('click', async ()=>{
       const logoSize = Math.floor(canvas.width * 0.22);
       const x = (canvas.width - logoSize)/2;
       const y = (canvas.height - logoSize)/2;
-      const pad = Math.round(logoSize * 0.12);
-      const radius = Math.round(logoSize * 0.12);
-      ctx.fillStyle = 'rgba(255,255,255,0.9)'; roundRect(ctx, x - pad/2, y - pad/2, logoSize + pad, logoSize + pad, radius + 2); ctx.fill();
-      ctx.save(); roundRect(ctx, x, y, logoSize, logoSize, radius); ctx.clip(); ctx.drawImage(logo, x, y, logoSize, logoSize); ctx.restore();
+
+      // 로고 배경 곡률 높이고, 투명도 0 (불투명 흰색)
+      const radius = Math.round(logoSize * 0.25); 
+      const pad = Math.round(logoSize * 0.15); 
+      
+      ctx.fillStyle = 'rgba(255,255,255,1)'; 
+      roundRect(ctx, x - pad/2, y - pad/2, logoSize + pad, logoSize + pad, radius + 2); 
+      ctx.fill();
+      
+      ctx.save(); 
+      roundRect(ctx, x, y, logoSize, logoSize, radius); 
+      ctx.clip(); 
+      ctx.drawImage(logo, x, y, logoSize, logoSize); 
+      ctx.restore();
+      
       const pngUrl = canvas.toDataURL('image/png');
       const a = document.createElement('a'); a.href = pngUrl; a.download = 'qr_with_logo.png'; document.body.appendChild(a); a.click(); a.remove();
       URL.revokeObjectURL(obj);
