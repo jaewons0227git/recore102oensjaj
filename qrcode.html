@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>QR 코드 생성기 — Single HTML</title>
+<style>
+  :root{--bg:#f7f8fa;--card:#fff;--muted:#6b7280}
+  
+  /* ================================================= */
+  /* ✅ 스크롤 짤림 해결을 위한 CSS 수정 */
+  /* ================================================= */
+  html,body{min-height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial}
+  body{
+    background:linear-gradient(180deg,#eef2ff 0%,var(--bg) 100%);
+    display:flex;
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: flex-start; 
+    padding:24px;
+  }
+  .card{
+    width:100%;
+    max-width:800px;
+    background:var(--card);
+    border-radius:14px;
+    padding:20px;
+    box-shadow:0 8px 30px rgba(12,18,40,0.08);
+  }
+  
+  /* 나머지 스타일은 기존 및 수정된 내용 유지 */
+  h1{margin:0 0 8px;font-size:20px}
+  p.lead{margin:0 0 18px;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:1fr 280px;gap:18px}
+  label{font-size:13px;color:#111;margin-bottom:6px;display:block}
+  textarea,input,select{width:100%;box-sizing:border-box;padding:10px;border-radius:8px;border:1px solid #e6e9ee;background:#fff}
+  textarea{min-height:120px;resize:vertical}
+  .controls{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  .preview{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px;border-radius:12px;border:1px dashed #eef2ff;height:100%}
+  /* .preview img의 기존 max-width: 100%는 그대로 유지 */
+  .preview img, .preview svg{max-width:100%;height:auto} 
+  .row{display:flex;gap:8px;margin-top:10px}
+  button{cursor:pointer;padding:10px 12px;border-radius:10px;border:0;background:#111;color:#fff}
+  .secondary{background:#f3f4f6;color:#111;border:1px solid #e6e9ee}
+  .small{padding:8px 10px;font-size:13px}
+  .meta{font-size:12px;color:var(--muted);margin-top:8px} 
+  footer{font-size:12px;color:var(--muted);text-align:right;margin-top:12px; width: 100%; max-width: 800px;} 
+  .controls-vertical{display:flex;gap:8px;flex-direction:column}
+  
+  /* 색상 미리보기를 위한 스타일 */
+  .color-control-wrapper {
+    display: flex;
+    gap: 8px;
+    align-items: center; 
+  }
+  .color-control-wrapper input[type="color"] {
+    flex-grow: 1; 
+    width: auto; 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    height: 38px;
+    padding: 0;
+    border: 1px solid #e6e9ee;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .color-control-wrapper input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+  .color-control-wrapper input[type="color"]::-webkit-color-swatch { border: none; border-radius: 8px; }
+  .color-control-wrapper input[type="color"]::-moz-color-swatch-wrapper { padding: 0; }
+  .color-control-wrapper input[type="color"]::-moz-color-swatch { border: none; border-radius: 8px; }
+
+  .color-code {
+    font-size: 14px;
+    width: 70px; 
+    text-align: right;
+    color: #333;
+    font-family: monospace;
+  }
+  
+  /* 파일 선택 및 체크박스 버튼 스타일 */
+  .file-label-wrapper { 
+    display: flex; 
+    gap: 8px; 
+    align-items: center; 
+    margin-top: 12px; 
+  }
+  .custom-file-upload {
+    cursor: pointer;
+    padding: 8px 10px; 
+    border-radius: 10px;
+    border: 1px solid #e6e9ee;
+    background: #f3f4f6;
+    color: #111;
+    font-size: 13px;
+    display: inline-block;
+    flex-grow: 1; 
+    text-align: center;
+    overflow: hidden; 
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  #logoInput { display: none; } 
+
+  .checkbox-label {
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid #e6e9ee;
+    background: #f3f4f6;
+    color: #111;
+    font-size: 13px;
+    display: flex; 
+    align-items: center;
+    gap: 6px;
+  }
+  .checkbox-label input[type="checkbox"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border: 1px solid #999;
+    border-radius: 3px;
+    margin: 0;
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    background: #fff;
+    transition: background 0.1s;
+  }
+  .checkbox-label input[type="checkbox"]:checked {
+    background: #111; 
+    border-color: #111;
+  }
+  .checkbox-label input[type="checkbox"]:checked::after {
+    content: '✓'; 
+    color: #fff;
+    font-size: 10px;
+    line-height: 14px;
+    position: absolute;
+    top: 0;
+    left: 2px;
+  }
+
+  /* 파일 인풋의 파일 이름 표시용 */
+  .file-name-display {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 4px;
+    height: 14px; 
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 100%;
+    max-width: 800px;
+  }
+
+
+  @media (max-width:820px){
+    .grid{grid-template-columns:1fr;}.preview{order:-1}
+    
+    /* ✅ 모바일 QR 이미지 크기 조정 */
+    #qrImg {
+      max-width: 80% !important; 
+    }
+  }
+
+  /* loading bar */
+  @keyframes loadingBar { from{transform:translateX(-100%)} to{transform:translateX(100%)} }
+  .loading-track{width:100%;height:8px;background:#eee;border-radius:6px;overflow:hidden}
+  .loading-progress{width:40%;height:100%;background:#6366f1;border-radius:6px;transform:translateX(-100%);animation:loadingBar 1.2s linear infinite}
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>QR 코드 생성기</h1>
+    <p class="lead">텍스트/URL을 입력하면 바로 QR 코드를 생성합니다.</p>
+
+    <div class="grid">
+      <div>
+        <label for="data">내용 (텍스트 / URL)</label>
+        <textarea id="data" placeholder="https://example.com">https://example.com</textarea>
+
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <div style="flex:1">
+            <label for="size">사이즈 (px)</label>
+            <input id="size" type="number" min="64" max="2000" value="400">
+          </div>
+          <div style="width:120px">
+            <label for="ecc">복원력 (ECC)</label>
+            <select id="ecc">
+              <option value="L">L (낮음)</option>
+              <option value="M" selected>M (보통)</option>
+              <option value="Q">Q (높음)</option>
+              <option value="H">H (매우높음)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:8px;align-items:end">
+          <div style="flex:1">
+            <label for="fg">전경색</label>
+            <div class="color-control-wrapper">
+              <input id="fg" type="color" value="#000000">
+              <span id="fg-code" class="color-code">#000000</span>
+            </div>
+          </div>
+          <div style="flex:1">
+            <label for="bg">배경색</label>
+            <div class="color-control-wrapper">
+              <input id="bg" type="color" value="#ffffff">
+              <span id="bg-code" class="color-code">#ffffff</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+          <label class="checkbox-label" for="transparent">
+            <input type="checkbox" id="transparent">
+            배경 투명
+          </label>
+        </div>
+
+        <div class="file-label-wrapper">
+          <label class="custom-file-upload" for="logoInput">
+            가운데 로고 이미지 선택...
+          </label>
+          <input type="file" id="logoInput" accept="image/*">
+        </div>
+        <div id="fileNameDisplay" class="file-name-display">선택된 파일 없음</div>
+
+        <div class="row">
+          <button id="gen">생성하기</button>
+          <button id="downloadPng" class="secondary small">PNG로 다운로드</button>
+          <button id="downloadSvg" class="secondary small">SVG로 다운로드</button>
+        </div>
+
+        <div class="meta">베타버전으로 오류가 있을 수 있습니다.</div>
+      </div>
+
+      <div class="preview" id="previewBox">
+        <div id="previewInner">
+          <div id="loading" style="display:none;width:100%;text-align:center;margin-bottom:10px">
+            <div class="loading-track"><div class="loading-progress"></div></div>
+            <div style="font-size:12px;margin-top:6px;color:#6b7280">생성 중…</div>
+          </div>
+          <div id="errorMsg" style="display:none;font-size:14px;color:#ef4444;text-align:center;margin-top:20px">QR 코드가 생성되지 않았습니다.</div>
+          <img id="qrImg" alt="QR preview" style="display:none;max-width:100%;height:auto;border-radius:8px;">
+        </div>
+        <div class="row" style="margin-top:12px">
+          <button id="copyURL" class="secondary small">이미지 URL 복사</button>
+          <button id="openNew" class="small">새 탭에서 열기</button>
+        </div>
+      </div>
+    </div>
+
+    <footer>Copyright 2025. CorerepubliX all rights reserved.</footer>
+  </div>
+
+<script>
+// elements
+const dataEl = document.getElementById('data');
+const sizeEl = document.getElementById('size');
+const fgEl = document.getElementById('fg');
+const bgEl = document.getElementById('bg');
+const eccEl = document.getElementById('ecc');
+const genBtn = document.getElementById('gen');
+const qrImg = document.getElementById('qrImg');
+const downloadPng = document.getElementById('downloadPng');
+const downloadSvg = document.getElementById('downloadSvg');
+const copyURL = document.getElementById('copyURL');
+const openNew = document.getElementById('openNew');
+const loadingEl = document.getElementById('loading');
+const errorEl = document.getElementById('errorMsg');
+const transparentEl = document.getElementById('transparent');
+const logoInput = document.getElementById('logoInput');
+
+const fgCodeEl = document.getElementById('fg-code');
+const bgCodeEl = document.getElementById('bg-code');
+const fileNameDisplay = document.getElementById('fileNameDisplay'); 
+
+let logoData = null; // data URL
+logoInput.addEventListener('change', e => {
+  const file = e.target.files[0];
+  const labelEl = document.querySelector('.custom-file-upload');
+  
+  if (!file) { 
+    logoData = null; 
+    fileNameDisplay.textContent = '선택된 파일 없음';
+    labelEl.textContent = '가운데 로고 이미지 선택...';
+    return; 
+  }
+  fileNameDisplay.textContent = file.name; // 파일 이름 표시
+  labelEl.textContent = file.name; // 레이블 텍스트도 파일 이름으로 변경
+  
+  const reader = new FileReader();
+  reader.onload = () => { logoData = reader.result; };
+  reader.readAsDataURL(file);
+});
+
+// Function to update color code display
+function updateColorDisplay(inputElement, codeElement) {
+  const hex = inputElement.value.toUpperCase();
+  codeElement.textContent = hex;
+}
+
+// Initial color display update
+updateColorDisplay(fgEl, fgCodeEl);
+updateColorDisplay(bgEl, bgCodeEl);
+
+// Event listeners for color changes
+fgEl.addEventListener('input', () => updateColorDisplay(fgEl, fgCodeEl));
+bgEl.addEventListener('input', () => updateColorDisplay(bgEl, bgCodeEl));
+
+function buildApiUrl({data,size,fg,bg,ecc,format='png',transparent=false}){
+  const params = new URLSearchParams();
+  params.set('data', data);
+  params.set('size', size + 'x' + size);
+  params.set('color', fg.replace('#',''));
+  // QR API expects bgcolor in hex or rgb; for transparency use special value if supported
+  if(transparent){
+    // api.qrserver accepts bgcolor in format r-g-b-a (0-255) as used earlier; use 255-255-255-00
+    params.set('bgcolor', '255-255-255-00');
+  } else {
+    params.set('bgcolor', bg.replace('#',''));
+  }
+  params.set('ecc', ecc);
+  params.set('format', format);
+  return 'https://api.qrserver.com/v1/create-qr-code/?' + params.toString();
+}
+
+async function fetchImageAsBitmap(url){
+  const resp = await fetch(url);
+  if(!resp.ok) throw new Error('fetch failed');
+  const blob = await resp.blob();
+  // createImageBitmap works for png/svg
+  return await createImageBitmap(blob);
+}
+
+async function generate(format='png'){
+  const data = dataEl.value || '';
+  if(!data.trim()){ alert('내용을 입력하세요.'); return }
+  const size = parseInt(sizeEl.value) || 400;
+  const fg = fgEl.value || '#000000';
+  const bg = bgEl.value || '#ffffff';
+  const ecc = eccEl.value || 'M';
+  const transparent = transparentEl.checked;
+
+  loadingEl.style.display='block';
+  errorEl.style.display='none';
+  qrImg.style.display='none';
+
+  const apiUrl = buildApiUrl({data, size, fg, bg, ecc, format, transparent});
+
+  try{
+    // always fetch bitmap so we can composite logo and support transparency
+    const baseBitmap = await fetchImageAsBitmap(apiUrl + '&_=' + Date.now());
+
+    // if no logo and not composite-needed, simply set blob url
+    let finalDataUrl = null;
+    if(!logoData){
+      // convert bitmap to blob via canvas to get data URL (preserve alpha)
+      const canvas = document.createElement('canvas');
+      canvas.width = baseBitmap.width;
+      canvas.height = baseBitmap.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(baseBitmap,0,0);
+      finalDataUrl = canvas.toDataURL('image/png');
+    } else {
+      // composite logo at center with rounded-rect mask
+      const canvas = document.createElement('canvas');
+      canvas.width = baseBitmap.width;
+      canvas.height = baseBitmap.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(baseBitmap, 0, 0);
+
+      const logo = new Image();
+      logo.src = logoData;
+      await new Promise((res, rej)=>{ logo.onload = res; logo.onerror = rej; });
+
+      const logoSize = Math.floor(canvas.width * 0.22);
+      const x = (canvas.width - logoSize)/2;
+      const y = (canvas.height - logoSize)/2;
+
+      // draw rounded rect background (optional white ring for contrast)
+      const radius = Math.round(logoSize * 0.12);
+      // optional white padding behind logo for visibility
+      ctx.save();
+      // draw white rounded rect slightly larger than logo for contrast
+      const pad = Math.round(logoSize * 0.12);
+      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      roundRect(ctx, x - pad/2, y - pad/2, logoSize + pad, logoSize + pad, radius + 2);
+      ctx.fill();
+      ctx.restore();
+
+      // clip to rounded rect and draw logo
+      ctx.save();
+      roundRect(ctx, x, y, logoSize, logoSize, radius);
+      ctx.clip();
+      ctx.drawImage(logo, x, y, logoSize, logoSize);
+      ctx.restore();
+
+      finalDataUrl = canvas.toDataURL('image/png');
+    }
+
+    qrImg.src = finalDataUrl;
+    qrImg.alt = 'QR preview';
+    qrImg.style.display = 'block';
+
+  }catch(err){
+    console.error(err);
+    errorEl.style.display = 'block';
+  }finally{
+    loadingEl.style.display='none';
+  }
+}
+
+// helper: rounded rect path
+function roundRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+// event bindings
+genBtn.addEventListener('click', ()=>generate('png'));
+
+downloadPng.addEventListener('click', async ()=>{
+  const data = dataEl.value || '';
+  if(!data.trim()){ alert('내용을 입력하세요.'); return }
+  await generate('png');
+  // download currently displayed image
+  if(!qrImg.src){ alert('먼저 생성하세요.'); return }
+  const a = document.createElement('a');
+  a.href = qrImg.src;
+  a.download = 'qr.png';
+  document.body.appendChild(a); a.click(); a.remove();
+});
+
+downloadSvg.addEventListener('click', async ()=>{
+  const data = dataEl.value || '';
+  if(!data.trim()){ alert('내용을 입력하세요.'); return }
+  const size = parseInt(sizeEl.value) || 400;
+  const fg = fgEl.value || '#000000';
+  const bg = bgEl.value || '#ffffff';
+  const ecc = eccEl.value || 'M';
+  const transparent = transparentEl.checked;
+  const svgUrl = buildApiUrl({data, size, fg, bg, ecc, format:'svg', transparent});
+
+  try{
+    const resp = await fetch(svgUrl);
+    if(!resp.ok) throw new Error('fetch failed');
+    const svgText = await resp.text();
+    // if logo present, rasterize and composite then download PNG instead (SVG + logo composition is complex)
+    if(logoData){
+      const blob = new Blob([svgText],{type:'image/svg+xml'});
+      const obj = URL.createObjectURL(blob);
+      const img = new Image();
+      img.src = obj;
+      await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
+
+      const imageSize = size; 
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = imageSize;
+      canvas.height = imageSize;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img,0,0, imageSize, imageSize); 
+
+      // draw logo same as generate
+      const logo = new Image(); logo.src = logoData; await new Promise(res=>logo.onload = res);
+      const logoSize = Math.floor(canvas.width * 0.22);
+      const x = (canvas.width - logoSize)/2;
+      const y = (canvas.height - logoSize)/2;
+      const pad = Math.round(logoSize * 0.12);
+      const radius = Math.round(logoSize * 0.12);
+      ctx.fillStyle = 'rgba(255,255,255,0.9)'; roundRect(ctx, x - pad/2, y - pad/2, logoSize + pad, logoSize + pad, radius + 2); ctx.fill();
+      ctx.save(); roundRect(ctx, x, y, logoSize, logoSize, radius); ctx.clip(); ctx.drawImage(logo, x, y, logoSize, logoSize); ctx.restore();
+      const pngUrl = canvas.toDataURL('image/png');
+      const a = document.createElement('a'); a.href = pngUrl; a.download = 'qr_with_logo.png'; document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(obj);
+    } else {
+      // download raw svg
+      const blob = new Blob([svgText],{type:'image/svg+xml'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'qr.svg'; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),5000);
+    }
+  }catch(err){ console.error(err); alert('SVG 다운로드 실패'); }
+});
+
+copyURL.addEventListener('click', async ()=>{
+  const src = qrImg.src;
+  if(!src){ alert('먼저 QR 생성하세요.'); return }
+  try{ await navigator.clipboard.writeText(src); alert('이미지 URL이 복사되었습니다.'); }catch(e){ alert('복사 실패 — 수동으로 복사하세요.'); }
+});
+
+openNew.addEventListener('click', ()=>{
+  const src = qrImg.src; if(!src){ alert('먼저 QR 생성하세요.'); return }
+  window.open(src, '_blank');
+});
+
+// auto generate on load
+window.addEventListener('load', ()=>generate('png'));
+</script>
+</body>
+</html>
